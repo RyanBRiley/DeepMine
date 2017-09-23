@@ -30,19 +30,18 @@ class MineMonitor():
 	def monitor_feed(self, data, interval, start_index=1, end_index=21):
 		update = {}
 		for update_num in xrange(start_index, end_index):
-			update_raw = data.iloc(update_num)
+			update_raw = data.iloc[update_num]
 			for col in data.columns:
-				df = abs(update_raw[col] - sensor_mean[col])
-				if df < sensor_std[col]:
+				if col == 'Date':
+					continue
+				df = abs(update_raw[col] - self.sensor_mean[col])
+				if df < self.sensor_std[col]:
 					status = 'green'
-				elif df >= sensor_std[col] and df < 2 * sensor_std[col]:
+				elif df >= self.sensor_std[col] and df < 2 * self.sensor_std[col]:
 					status = 'yellow'
 				else:
 					status = 'red'
-			print status
-
-				#update[col] = 
-			#print update
+				print status
 			time.sleep(interval)
 		return
 
