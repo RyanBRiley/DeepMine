@@ -1,0 +1,17 @@
+.vertical-divider {
+    border-right:1px solid #ccc;
+}
+.box {
+    display:block;
+    float: right;
+}
+
+.nodecoration {
+    text-decoration: none;
+    color: inherit;
+}
+
+.nodecoration:hover {
+    text-decoration: none;
+    color: inherit;
+}
