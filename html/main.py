@@ -8,52 +8,45 @@ class Status(enum.Enum):
     Fail = 3
 
 data = [
+    "01-Jan-15 00:00:00",
     {
         "status":Status.Good,
-        "pressure_status": Status.Good,
-        "pressure": 3071,
-        "feed_status": Status.Good,
-        "feed": 280,
-        "level_status": Status.Good,
-        "level": 69
+        "pressure": [Status.Good, 3071],
+        "feed": [Status.Good, 280],
+        "level": [Status.Good, 69],
+        "vent value position": [Status.Good, 66]
     }, 
     {
         "status":Status.Good,
-        "pressure_status": Status.Fail,
-        "pressure": 10,
-        "feed_status": Status.Good,
-        "feed": 280,
-        "level_status": Status.Good,
-        "level": 69
+        "pressure": [Status.Fail, 10],
+        "feed": [Status.Good, 280],
+        "level": [Status.Good, 69],
+        "vent value position": [Status.Good, 66]
     }, 
     {
         "status":Status.Error,
-        "pressure_status": Status.Error,
-        "pressure": 2000,
-        "feed_status": Status.Good,
-        "feed": 100,
-        "level_status": Status.Error,
-        "level": 2
+        "pressure": [Status.Error, 2000],
+        "feed": [Status.Good, 100],
+        "level": [Status.Error, 2],
+        "vent value position": [Status.Good, 66]
     }, 
     {
         "status":Status.Fail,
-        "pressure_status": Status.Fail,
-        "pressure": 0,
-        "feed_status": Status.Fail,
-        "feed": 0,
-        "level_status": Status.Fail,
-        "level": 0
+        "pressure": [Status.Fail, 0],
+        "feed": [Status.Fail,0],
+        "level": [Status.Fail, 0],
+        "vent value position": [Status.Good, 66]
     }
 ]
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("templates/sensors.html", Status=Status, autoclaves=data)
+        self.render("templates/sensors.html", Status=Status, date=data[0], autoclaves=data[1:])
 
 class AutoclaveHandler(tornado.web.RequestHandler):
     def get(self, id):
         idx = int(id)
-        self.render("templates/single.html", Status=Status, autoclaves=data, id=idx, ac=data[idx])
+        self.render("templates/single.html", Status=Status, id=idx, ac=data[idx + 1]) # first index is date of update
 
 def make_app(): 
     return tornado.web.Application([
