@@ -2,40 +2,9 @@ import tornado.ioloop
 import tornado.web
 import sys 
 sys.path.append('../')
-from StatusEnum import Status
+import StatusEnum
 from threading import Lock 
-
-data = [
-    "01-Jan-15 00:00:00",
-    {
-        "status":Status.Good,
-        "pressure": [Status.Good, 3071],
-        "feed": [Status.Good, 280],
-        "level": [Status.Good, 69],
-        "vent value position": [Status.Good, 66]
-    }, 
-    {
-        "status":Status.Good,
-        "pressure": [Status.Fail, 10],
-        "feed": [Status.Good, 280],
-        "level": [Status.Good, 69],
-        "vent value position": [Status.Good, 66]
-    }, 
-    {
-        "status":Status.Caution,
-        "pressure": [Status.Caution, 2000],
-        "feed": [Status.Good, 100],
-        "level": [Status.Caution, 2],
-        "vent value position": [Status.Good, 66]
-    }, 
-    {
-        "status":Status.Fail,
-        "pressure": [Status.Fail, 0],
-        "feed": [Status.Fail,0],
-        "level": [Status.Fail, 0],
-        "vent value position": [Status.Good, 66]
-    }
-]
+from MineMonitor import MineMonitor
 
 
 class MyDataStore:
@@ -50,26 +19,31 @@ class MyDataStore:
                 cls._instance = MyDataStore()
             return cls._instance
 
-    def store_data(self, update_row):
+    def store_data(self, update_row, monitor):
         self.update_row = update_row
+        self.monitor = monitor
 
     def get_data(self):
-        return self.update_row
+        return {'row':self.update_row, 'monitor':self.monitor}
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        row_index = MyDataStore.instance().get_data()
-        print row_index
-        MyDataStore.instance().store_data(row_index + 1)
-        self.render("templates/sensors.html", Status=Status, date=data[0], autoclaves=data[1:])
+        d = MyDataStore.instance().get_data()
+        row_index = d['row']
+        monitor = d['monitor']
+        mydata = monitor.get_update(row_index)
+        MyDataStore.instance().store_data(row_index + 1, monitor)
+        self.render("templates/sensors.html", Status=StatusEnum.Status, date=mydata[0], autoclaves=mydata[1:])
 
 class AutoclaveHandler(tornado.web.RequestHandler):
     def get(self, id):
         idx = int(id)
-        self.render("templates/single.html", Status=Status, id=idx, ac=data[idx + 1]) # first index is date of update
+        self.render("templates/single.html", Status=StatusEnum.Status, id=idx, ac=data[idx + 1]) # first index is date of update
 
 def make_app(): 
-    MyDataStore.instance().store_data(0)
+    monitor = MineMonitor('../data')
+    monitor.learn_stats()
+    MyDataStore.instance().store_data(0, monitor)
     return tornado.web.Application([
         (r"/", MainHandler),
         (r"/autoclave/(\d{1})", AutoclaveHandler),
