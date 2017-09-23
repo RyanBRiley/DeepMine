@@ -1,5 +1,6 @@
 import pandas as pd 
 import numpy as np
+import time
 #from sklearn.cluster import KMean
 
 
@@ -26,8 +27,11 @@ class MineMonitor():
 		return
 
 	#Takes an input file and simulates a live feed with a stated interval, outputs state of each sensor
-	def monitor_feed(data):
-		print "in monitor_feed\n-----------------------"
+	def monitor_feed(data, interval, start_index=1, end_index=21):
+		for update_num in xrange(start_index, end_index):
+			update = data.iloc(update_num)
+			print update
+			time.sleep(interval)
 		return
 
 
