@@ -8,35 +8,40 @@ class Status(enum.Enum):
     Fail = 3
 
 data = [
+    "01-Jan-15 00:00:00",
     {
         "status":Status.Good,
         "pressure": [Status.Good, 3071],
         "feed": [Status.Good, 280],
-        "level": [Status.Good, 69]
+        "level": [Status.Good, 69],
+        "vent value position": [Status.Good, 66]
     }, 
     {
         "status":Status.Good,
         "pressure": [Status.Fail, 10],
         "feed": [Status.Good, 280],
-        "level": [Status.Good, 69]
+        "level": [Status.Good, 69],
+        "vent value position": [Status.Good, 66]
     }, 
     {
         "status":Status.Error,
         "pressure": [Status.Error, 2000],
         "feed": [Status.Good, 100],
-        "level": [Status.Error, 2]
+        "level": [Status.Error, 2],
+        "vent value position": [Status.Good, 66]
     }, 
     {
         "status":Status.Fail,
         "pressure": [Status.Fail, 0],
         "feed": [Status.Fail,0],
-        "level": [Status.Fail, 0]
+        "level": [Status.Fail, 0],
+        "vent value position": [Status.Good, 66]
     }
 ]
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("templates/sensors.html", Status=Status, autoclaves=data)
+        self.render("templates/sensors.html", Status=Status, date=data[0], autoclaves=data[1:])
 
 class AutoclaveHandler(tornado.web.RequestHandler):
     def get(self, id):

@@ -3,6 +3,7 @@
 {% block title %}Agitator Challenge - Sensors{% end %}
 
 {% block content %}
+<p class="flrt small text-muted">Last update: {{date}}</p>
 <h2>Statuses</h2>
 <div class="row">
     {% for i, ac in enumerate(autoclaves) %}
