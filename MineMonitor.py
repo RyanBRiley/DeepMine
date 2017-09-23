@@ -66,7 +66,7 @@ class MineMonitor():
 				autoclav_status = StatusEnum.Status.Caution
 			else:
 				autoclav_status = StatusEnum.Status.Good
-			update[autoclav_num + 1]['StatusEnum.Status'] = autoclav_status	
+			update[autoclav_num + 1]['status'] = autoclav_status	
 		return update
 
 
