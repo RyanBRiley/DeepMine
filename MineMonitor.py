@@ -11,9 +11,9 @@ class MineMonitor():
 	sensor_std = []
 
 	def __init__(self, data):
-		#print "initializing instance of mine monitor\n------------------------"
+		print "---------------------initializing instance of mine monitor------------------------"
 		#print data[0].columns
-		self.sensors = [sensor for sensor in data[0].columns.values[2:]]
+		self.sensors = [sensor for sensor in data[0].columns.values[1:]]
 		#print self.sensors
 		return
 
@@ -21,13 +21,12 @@ class MineMonitor():
 	def learn_stats(self, data):
 		print "-------------learning stats---------------"
 		for autoclav_num in xrange(len(data)):
-			print autoclav_num
 			self.sensor_mean.append({})
 			self.sensor_std.append({})	
 			for sensor in self.sensors:
-				#print data[autoclav_num][sensor][0]
-				self.sensor_mean[autoclav_num][sensor] = np.mean(data[autoclav_num][sensor][1:].values.astype(np.float))
-				self.sensor_std[autoclav_num][sensor] = np.std(data[autoclav_num][sensor][1:].values.astype(np.float))
+				print 'sensor: ' + sensor
+				self.sensor_mean[autoclav_num][sensor] = np.mean(data[autoclav_num][sensor].values.astype(np.float))
+				self.sensor_std[autoclav_num][sensor] = np.std(data[autoclav_num][sensor].values.astype(np.float))
 		return
 
 	#Takes an input file and simulates a live feed with a stated interval, outputs state of each sensor
@@ -36,13 +35,16 @@ class MineMonitor():
 		caution_count = 0
 		fail_count = 0
 		for autoclav_num in xrange(len(data)):
+			print 'autoclav_num: ' + str(autoclav_num)
 			update_raw = data[autoclav_num].iloc[update_num]
 			if not update:
 				update.append(update_raw['Date'])
 			update.append({})
-			for col in data[autoclav_num].columns[]:
+			for col in data[autoclav_num].columns:
 				if col == 'Date':
 					continue
+				print update_raw[col]
+				print self.sensor_mean[autoclav_num][col]
 				df = abs(update_raw[col] - self.sensor_mean[autoclav_num][col])
 				if df < self.sensor_std[autoclav_num][col]:
 					StatusEnum.Status = StatusEnum.Status.Good
@@ -52,7 +54,6 @@ class MineMonitor():
 				else:
 					StatusEnum.Status = StatusEnum.Status.Fail
 					fail_count += 1 
-				#print StatusEnum.Status
 				print update
 				update[autoclav_num + 1][col] = [StatusEnum.Status, update_raw[col]]
 			if fail_count > 2:
