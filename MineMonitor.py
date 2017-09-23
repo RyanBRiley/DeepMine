@@ -3,7 +3,10 @@ import numpy as np
 import time
 import glob
 #from sklearn.cluster import KMean
-
+class Status(enum.Enum):
+    Good = 1
+    Caution = 2
+    Fail = 3
 
 class MineMonitor(): 
 	sensors = []
@@ -29,22 +32,38 @@ class MineMonitor():
 
 	#Takes an input file and simulates a live feed with a stated interval, outputs state of each sensor
 	def monitor_feed(self, data, interval, start_index=1, end_index=21):
-		update = {}
+		update = []
+		caution_count = 0
+		fail_count = 0
 		for update_num in xrange(start_index, end_index):
-			update_raw = data.iloc[update_num]
-			for col in data.columns:
-				if col == 'Date':
-					continue
-				df = abs(update_raw[col] - self.sensor_mean[col])
-				if df < self.sensor_std[col]:
-					status = 'green'
-				elif df >= self.sensor_std[col] and df < 2 * self.sensor_std[col]:
-					status = 'yellow'
+			for autoclav_num in xrange(len(data)):
+				update_raw = data[autoclav_num].iloc[update_num]
+				update[autoclav_num + 1] = {}
+				for col in data[autoclav_num].columns:
+					if col == 'Date':
+						if not update[0]:
+							update[0] = update_raw[col]
+						continue
+					df = abs(update_raw[col] - self.sensor_mean[col])
+					if df < self.sensor_std[col]:
+						status = Status.Good
+					elif df >= self.sensor_std[col] and df < 2 * self.sensor_std[col]:
+						status = Status.Caution
+						caution_count += 1
+					else:
+						status = Status.Fail
+						fail_count += 1 
+					print status
+					update[autoclav_num + 1][col] = [status, update_raw[col]]
+				if fail_count > 2:
+					autoclav_status = Status.Fail
+				elif fail_count > 0 or caution_count > 2:
+					autoclav_status = Status.Caution
 				else:
-					status = 'red'
-				print status
+					autoclav_status = Status.Good
+				update[autoclav_num + 1]['status'] = autoclav_status
 			time.sleep(interval)
-		return
+		return update
 
 
 
