@@ -1,6 +1,7 @@
 import pandas as pd 
 import numpy as np
 import time
+import glob
 #from sklearn.cluster import KMean
 
 
@@ -48,7 +49,20 @@ class MineMonitor():
 
 
 if __name__ == '__main__':
-	data = pd.read_csv('data/Autoclave_2_2017.csv', skiprows=3).convert_objects(convert_numeric=True)
-	monitor = MineMonitor(data)
-	monitor.learn_stats(data)
-	monitor.monitor_feed(data, 2)
+    data = []
+    auto_claves = ['1','2','3','4']
+    
+    for auto_clave in auto_claves:
+        all_clean_files = glob.glob('data/Autoclave_' + auto_clave + '_2015*_clean.csv')
+        for file in all_clean_files:
+            print "Reading file: " + file
+            data.append(pd.read_csv(file, skiprows=3).convert_objects(convert_numeric=True))
+
+    
+    #monitor = MineMonitor(data)
+    #monitor.learn_stats(data)
+    #monitor.monitor_feed(data, 2)
+	#data = pd.read_csv('data/Autoclave_2_2017.csv', skiprows=3).convert_objects(convert_numeric=True)
+	#monitor = MineMonitor(data)
+	#monitor.learn_stats(data)
+	#monitor.monitor_feed(data, 2)
