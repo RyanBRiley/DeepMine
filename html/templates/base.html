@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+    <head>
+        <title>{% block title %}Agitator Challenge{% end %}</title>
+
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/styles.css">
+    </head>
+    <body>
+        <div class="container">
+            <h1>Deep Mine</h1>
+            <hr>
+            <h2>Statuses</h2>
+            <div class="row">
+                {% for i, ac in enumerate(autoclaves) %}
+                    <a href="#" class="col p-3 nodecoration
+                        {% if i < len(autoclaves)-1 %}vertical-divider{% end %}
+                    ">
+                    <div>
+                        <!-- Title of Autoclave  -->
+                        <h4 class="text-center">Autoclave {{ i+1 }}</h4>
+
+                        <!-- Overall Status of Autoclave -->
+                        <div class="text-white text-center p-3
+                            {% if ac["status"] == Status.Good %}
+                                bg-success
+                            {% elif ac["status"] == Status.Error %}
+                                bg-warning
+                            {% elif ac["status"] == Status.Fail %}
+                                bg-danger
+                            {% else %}
+                                bg-info
+                            {% end %}
+                        ">System Status</div>
+
+                        <!-- Status of Pressure -->
+                        <div>
+                            <p class="mt-2 p-2">Pressure: 
+                                <span class="box text-white
+                                {% if ac["pressure_status"] == Status.Good %}
+                                    bg-success
+                                {% elif ac["pressure_status"] == Status.Error %}
+                                    bg-warning
+                                {% elif ac["pressure_status"] == Status.Fail %}
+                                    bg-danger
+                                {% else %}
+                                    bg-info
+                                {% end %}    
+                                ">{{ac["pressure"]}}</span>
+                            </p>
+                        </div>
+
+                        <!-- Feed Status -->
+                        <div>
+                            <p class="mt-2 p-2">Total Feed: 
+                                <span class="box text-white
+                                {% if ac["feed_status"] == Status.Good %}
+                                    bg-success
+                                {% elif ac["feed_status"] == Status.Error %}
+                                    bg-warning
+                                {% elif ac["feed_status"] == Status.Fail %}
+                                    bg-danger
+                                {% else %}
+                                    bg-info
+                                {% end %}    
+                                ">{{ac["feed"]}}</span>
+                            </p>
+                        </div>
+                    </div></a>
+                {% end %}
+            </div>
+        </div>
+    </body>
+</html>
