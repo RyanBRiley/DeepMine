@@ -3,6 +3,7 @@ import tornado.web
 import sys 
 sys.path.append('../')
 from StatusEnum import Status
+from threading import Lock 
 
 data = [
     "01-Jan-15 00:00:00",
@@ -36,8 +37,30 @@ data = [
     }
 ]
 
+
+class MyDataStore:
+
+    _instance = None
+    _lock = Lock()
+
+    @classmethod
+    def instance(cls):
+        with cls._lock:
+            if cls._instance is None:
+                cls._instance = MyDataStore()
+            return cls._instance
+
+    def store_data(self, update_row):
+        self.update_row = update_row
+
+    def get_data(self):
+        return self.update_row
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
+        row_index = MyDataStore.instance().get_data()
+        print row_index
+        MyDataStore.instance().store_data(row_index + 1)
         self.render("templates/sensors.html", Status=Status, date=data[0], autoclaves=data[1:])
 
 class AutoclaveHandler(tornado.web.RequestHandler):
@@ -46,6 +69,7 @@ class AutoclaveHandler(tornado.web.RequestHandler):
         self.render("templates/single.html", Status=Status, id=idx, ac=data[idx + 1]) # first index is date of update
 
 def make_app(): 
+    MyDataStore.instance().store_data(0)
     return tornado.web.Application([
         (r"/", MainHandler),
         (r"/autoclave/(\d{1})", AutoclaveHandler),
