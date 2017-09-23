@@ -28,10 +28,10 @@ class MineMonitor():
 		for autoclav_num in xrange(len(self.data)):
 			self.sensor_mean.append({})
 			self.sensor_std.append({})	
+			count = 0
 			for sensor in self.sensors:
-				print 'sensor: ' + sensor
-				self.sensor_mean[autoclav_num][sensor] = np.mean(self.data[autoclav_num][sensor].values.astype(np.float))
-				self.sensor_std[autoclav_num][sensor] = np.std(self.data[autoclav_num][sensor].values.astype(np.float))
+				self.sensor_mean[autoclav_num][sensor] = np.nanmean(self.data[autoclav_num][sensor].values.astype(np.float))
+				self.sensor_std[autoclav_num][sensor] = np.nanstd(self.data[autoclav_num][sensor].values.astype(np.float))
 		return
 
 	#Takes an input file and simulates a live feed with a stated interval, outputs state of each sensor
@@ -40,17 +40,21 @@ class MineMonitor():
 		caution_count = 0
 		fail_count = 0
 		for autoclav_num in xrange(len(self.data)):
-			print 'autoclav_num: ' + str(autoclav_num)
+			#print 'autoclav_num: ' + str(autoclav_num)
 			update_raw = self.data[autoclav_num].iloc[update_num]
 			if not update:
 				update.append(update_raw['Date'])
 			update.append({})
 			for col in self.data[autoclav_num].columns:
-				print col
-				print update
+				#print col
+				#print update
+				#print str(type(update_raw[col]))
+				
 				if col == 'Date':
 					continue
+				#print self.sensor_mean[autoclav_num][col]
 				df = abs(update_raw[col] - self.sensor_mean[autoclav_num][col])
+				#print df
 				if df < self.sensor_std[autoclav_num][col]:
 					status = StatusEnum.Status.Good
 				elif df >= self.sensor_std[autoclav_num][col] and df < 2 * self.sensor_std[autoclav_num][col]:
@@ -74,7 +78,7 @@ class MineMonitor():
 if __name__ == '__main__':
     monitor = MineMonitor('data')
     monitor.learn_stats()
-    print monitor.get_update(2)
+    monitor.get_update(2)
 	#data = pd.read_csv('data/Autoclave_2_2017.csv', skiprows=3).convert_objects(convert_numeric=True)
 	#monitor = MineMonitor(data)
 	#monitor.learn_stats(data)
