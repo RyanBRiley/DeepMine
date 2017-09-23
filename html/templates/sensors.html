@@ -3,10 +3,11 @@
 {% block title %}Agitator Challenge - Sensors{% end %}
 
 {% block content %}
+<p class="flrt small text-muted">Last update: {{date}}</p>
 <h2>Statuses</h2>
 <div class="row">
     {% for i, ac in enumerate(autoclaves) %}
-        <a href="/autoclave/{{i}}" class="col p-3 nodecoration
+        <a href="/autoclave/{{i}}" class="col-md-3 p-3 nodecoration
             {% if i < len(autoclaves)-1 %}vertical-divider{% end %}
         ">
         <div>
@@ -17,7 +18,7 @@
             <div class="text-white text-center p-3
                 {% if ac["status"] == Status.Good %}
                     bg-success
-                {% elif ac["status"] == Status.Error %}
+                {% elif ac["status"] == Status.Caution %}
                     bg-warning
                 {% elif ac["status"] == Status.Fail %}
                     bg-danger
@@ -25,57 +26,7 @@
                     bg-info
                 {% end %}
             ">System Status</div>
-
-            <!-- Status of Pressure -->
-            <div>
-                <p class="mt-2 p-2">Pressure: 
-                    <span class="box text-white
-                    {% if ac["pressure_status"] == Status.Good %}
-                        bg-success
-                    {% elif ac["pressure_status"] == Status.Error %}
-                        bg-warning
-                    {% elif ac["pressure_status"] == Status.Fail %}
-                        bg-danger
-                    {% else %}
-                        bg-info
-                    {% end %}    
-                    ">{{ac["pressure"]}}</span>
-                </p>
-            </div>
-
-            <!-- Feed Status -->
-            <div>
-                <p class="mt-2 p-2">Total Feed: 
-                    <span class="box text-white
-                    {% if ac["feed_status"] == Status.Good %}
-                        bg-success
-                    {% elif ac["feed_status"] == Status.Error %}
-                        bg-warning
-                    {% elif ac["feed_status"] == Status.Fail %}
-                        bg-danger
-                    {% else %}
-                        bg-info
-                    {% end %}    
-                    ">{{ac["feed"]}}</span>
-                </p>
-            </div>
-
-            <!-- Level Status -->
-            <div>
-                <p class="mt-2 p-2">Level: 
-                        <span class="box text-white
-                        {% if ac["level_status"] == Status.Good %}
-                            bg-success
-                        {% elif ac["level_status"] == Status.Error %}
-                            bg-warning
-                        {% elif ac["level_status"] == Status.Fail %}
-                            bg-danger
-                        {% else %}
-                            bg-info
-                        {% end %}    
-                        ">{{ac["level"]}}</span>
-                    </p>
-            </div>
+            {% include variable_loop.html %}
         </div></a>
     {% end %}
 </div>

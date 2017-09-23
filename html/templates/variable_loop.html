@@ -1,0 +1,21 @@
+{% for field, value in ac.iteritems() %}
+    {% if field == "status" %}
+        {% continue %}
+    {% end %}
+    <div>
+        <p class="mt-2 p-2">{{ field.title() }}: 
+            <span class="box text-white
+            {% if value[0] == Status.Good %}
+                bg-success
+            {% elif value[0] == Status.Caution %}
+                bg-warning
+            {% elif value[0] == Status.Fail %}
+                bg-danger
+            {% else %}
+                bg-info
+            {% end %}    
+            "></span>
+            <span>{{ value[1] }}</span>
+        </p>
+    </div>
+{% end %}
