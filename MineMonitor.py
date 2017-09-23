@@ -27,17 +27,29 @@ class MineMonitor():
 		return
 
 	#Takes an input file and simulates a live feed with a stated interval, outputs state of each sensor
-	def monitor_feed(data, interval, start_index=1, end_index=21):
+	def monitor_feed(self, data, interval, start_index=1, end_index=21):
+		update = {}
 		for update_num in xrange(start_index, end_index):
-			update = data.iloc(update_num)
-			print update
+			update_raw = data.iloc(update_num)
+			for col in data.columns:
+				df = abs(update_raw[col] - sensor_mean[col])
+				if df < sensor_std[col]:
+					status = 'green'
+				elif df >= sensor_std[col] and df < 2 * sensor_std[col]:
+					status = 'yellow'
+				else:
+					status = 'red'
+			print status
+
+				#update[col] = 
+			#print update
 			time.sleep(interval)
 		return
 
 
 
 if __name__ == '__main__':
-	data = pd.read_csv('data/Autoclave_2_2017.csv', skiprows=3)
+	data = pd.read_csv('data/Autoclave_2_2017.csv', skiprows=3).convert_objects(convert_numeric=True)
 	monitor = MineMonitor(data)
 	monitor.learn_stats(data)
-	monitor.monitor_feed(data)
+	monitor.monitor_feed(data, 2)
