@@ -1,11 +1,8 @@
 import tornado.ioloop
 import tornado.web
-import enum
-
-class Status(enum.Enum):
-    Good = 1
-    Error = 2
-    Fail = 3
+import sys 
+sys.path.append('../')
+from StatusEnum import Status
 
 data = [
     "01-Jan-15 00:00:00",
@@ -24,10 +21,10 @@ data = [
         "vent value position": [Status.Good, 66]
     }, 
     {
-        "status":Status.Error,
-        "pressure": [Status.Error, 2000],
+        "status":Status.Caution,
+        "pressure": [Status.Caution, 2000],
         "feed": [Status.Good, 100],
-        "level": [Status.Error, 2],
+        "level": [Status.Caution, 2],
         "vent value position": [Status.Good, 66]
     }, 
     {
