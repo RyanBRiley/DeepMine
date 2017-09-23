@@ -46,7 +46,7 @@ class MainHandler(tornado.web.RequestHandler):
 class AutoclaveHandler(tornado.web.RequestHandler):
     def get(self, id):
         idx = int(id)
-        self.render("templates/single.html", Status=Status, id=idx, ac=data[idx])
+        self.render("templates/single.html", Status=Status, id=idx, ac=data[idx + 1]) # first index is date of update
 
 def make_app(): 
     return tornado.web.Application([
