@@ -3,6 +3,7 @@ import numpy as np
 import time
 import glob
 import StatusEnum
+import re
 #from sklearn.cluster import KMean
 
 class MineMonitor(): 
@@ -34,47 +35,67 @@ class MineMonitor():
 				self.sensor_std[autoclav_num][sensor] = np.nanstd(self.data[autoclav_num][sensor].values.astype(np.float))
 		return
 
+	def generate_structure(self, update_num):
+		update = []
+		# Set the date as the first element.
+		update_raw = self.data[0].iloc[update_num]
+		update.append(update_raw['Date'])
+
+		for i in xrange(4): # autoclave
+			update.append({})
+			update[i+1]["status"] = None
+			for j in xrange(7): # agitator
+				update[i + 1][chr(j+65)]={'status' : None}
+			update[i+1]["Other"] = {}
+
+		return update
+
+
 	#Takes an input file and simulates a live feed with a stated interval, outputs state of each sensor
 	def get_update(self, update_num):
-		update = []
-		for autoclav_num in xrange(len(self.data)):
+		# Get the data structure
+		update = self.generate_structure(update_num)
+		for autoclave_num in xrange(len(self.data)):
+			# initialize the counts
 			caution_count = 0
 			fail_count = 0
-			#print 'autoclav_num: ' + str(autoclav_num)
-			update_raw = self.data[autoclav_num].iloc[update_num]
-			if not update:
-				update.append(update_raw['Date'])
-			update.append({})
-			for col in self.data[autoclav_num].columns:
-				#print col
-				#print update
-				#print str(type(update_raw[col]))
-				
+
+			# get the data from the csv
+			update_raw = self.data[autoclave_num].iloc[update_num]
+			for col in self.data[autoclave_num].columns:
+
+				# Skip the date
 				if col == 'Date':
 					continue
-				#print self.sensor_mean[autoclav_num][col]
-				df = abs(update_raw[col] - self.sensor_mean[autoclav_num][col])
-				#print df
-				if df < self.sensor_std[autoclav_num][col]:
+				
+				# Regular expression to match single capital letters
+				match = None
+				result = re.search('\s[A-F]\s', col)
+				if result != None:
+					match = result.group(0)[1]
+				else:
+					match = "Other"
+
+				# Get difference between mean and raw value
+				df = abs(update_raw[col] - self.sensor_mean[autoclave_num][col])
+				if df < self.sensor_std[autoclave_num][col]:
 					status = StatusEnum.Status.Good
-				elif df >= self.sensor_std[autoclav_num][col] and df < 2 * self.sensor_std[autoclav_num][col]:
+				elif df >= self.sensor_std[autoclave_num][col] and df < 2 * self.sensor_std[autoclave_num][col]:
 					status = StatusEnum.Status.Caution
 					caution_count += 1
 				else:
 					status = StatusEnum.Status.Fail
 					fail_count += 1 
-				update[autoclav_num + 1][col] = [status, update_raw[col]]
+				update[autoclave_num + 1][match][col] = [status, update_raw[col]]
 			if fail_count > 2:
-				#print self.data[autoclav_num]['Date'][update_num]
-				autoclav_status = StatusEnum.Status.Fail
+				autoclave_status = StatusEnum.Status.Fail
 			elif caution_count > 5:
-				autoclav_status = StatusEnum.Status.Caution
+				autoclave_status = StatusEnum.Status.Caution
 			else:
-				autoclav_status = StatusEnum.Status.Good
-			update[autoclav_num + 1]['status'] = autoclav_status	
+				autoclave_status = StatusEnum.Status.Good
+			update[autoclave_num + 1]['status'] = autoclave_status
+		
 		return update
-
-
 
 if __name__ == '__main__':
     monitor = MineMonitor('data')
