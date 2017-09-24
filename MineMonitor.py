@@ -37,9 +37,9 @@ class MineMonitor():
 	#Takes an input file and simulates a live feed with a stated interval, outputs state of each sensor
 	def get_update(self, update_num):
 		update = []
-		caution_count = 0
-		fail_count = 0
 		for autoclav_num in xrange(len(self.data)):
+			caution_count = 0
+			fail_count = 0
 			#print 'autoclav_num: ' + str(autoclav_num)
 			update_raw = self.data[autoclav_num].iloc[update_num]
 			if not update:
@@ -67,7 +67,7 @@ class MineMonitor():
 			if fail_count > 2:
 				#print self.data[autoclav_num]['Date'][update_num]
 				autoclav_status = StatusEnum.Status.Fail
-			elif fail_count > 1 or caution_count > 3:
+			elif caution_count > 5:
 				autoclav_status = StatusEnum.Status.Caution
 			else:
 				autoclav_status = StatusEnum.Status.Good
