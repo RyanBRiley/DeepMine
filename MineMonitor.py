@@ -60,7 +60,7 @@ class MineMonitor():
 	#Takes an input file and simulates a live feed with a stated interval, outputs state of each sensor
 	def get_update(self, update_num):
 		# Get the data structure
-		update, fail_count, caution_count = self.generate_structure(update_num)
+		[update, fail_count, caution_count] = self.generate_structure(update_num)
 		for autoclave_num in xrange(len(self.data)):
 			# initialize the counts
 			autoclave_caution_count = 0
@@ -105,12 +105,12 @@ class MineMonitor():
 			'''
 			for key in caution_count[autoclave_num].keys():
 				if caution_count[autoclave_num][key] > 2:
-					update[autoclave_num + 1][key] = StatusEnum.Status.Caution
+					update[autoclave_num + 1][key]['status'] = StatusEnum.Status.Caution
 					autoclave_caution_count += 1
 
 			for key in fail_count[autoclave_num].keys():
 				if fail_count[autoclave_num][key] > 2:
-					update[autoclave_num + 1][key] = StatusEnum.Status.Fail
+					update[autoclave_num + 1][key]['status'] = StatusEnum.Status.Fail
 					autoclave_fail_count += 1
 
 
