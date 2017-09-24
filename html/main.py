@@ -32,7 +32,10 @@ class MainHandler(tornado.web.RequestHandler):
         row_index = d['row']
         monitor = d['monitor']
         mydata = monitor.get_update(row_index)
-        MyDataStore.instance().store_data(row_index + 1, monitor)
+        if monitor.getMaxSize() > row_index + 1:
+            MyDataStore.instance().store_data(row_index + 1, monitor)
+        else:
+            MyDataStore.instance().store_data(1, monitor)
         self.render("templates/sensors.html", Status=StatusEnum.Status, show_other=False, date=mydata[0], autoclaves=mydata[1:])
 
 class AutoclaveHandler(tornado.web.RequestHandler):
@@ -42,7 +45,11 @@ class AutoclaveHandler(tornado.web.RequestHandler):
         row_index = d['row']
         monitor = d['monitor']
         mydata = monitor.get_update(row_index)
-        self.render("templates/single.html", Status=StatusEnum.Status, show_other=True, id=idx, ac=mydata[idx + 1]) # first index is date of update
+        if monitor.getMaxSize() > row_index + 1:
+            MyDataStore.instance().store_data(row_index + 1, monitor)
+        else:
+            MyDataStore.instance().store_data(1, monitor)
+        self.render("templates/single.html", Status=StatusEnum.Status, show_other=True, id=idx, ac=mydata[idx + 1], date=mydata[0]) # first index is date of update
 
 class AgitatorHandler(tornado.web.RequestHandler):
     def get(self, auto_id, agi_id):
@@ -51,12 +58,16 @@ class AgitatorHandler(tornado.web.RequestHandler):
         row_index = d['row']
         monitor = d['monitor']
         mydata = monitor.get_update(row_index)
-        self.render("templates/single_agi.html", Status=StatusEnum.Status, id=agi_id, agi=mydata[auto_idx + 1][agi_id]) # first index is date of update
+        if monitor.getMaxSize() > row_index + 1:
+            MyDataStore.instance().store_data(row_index + 1, monitor)
+        else:
+            MyDataStore.instance().store_data(1, monitor)
+        self.render("templates/single_agi.html", Status=StatusEnum.Status, id=agi_id, agi=mydata[auto_idx + 1][agi_id], date=mydata[0]) # first index is date of update
 
 def make_app(): 
     monitor = MineMonitor('../data')
     monitor.learn_stats()
-    MyDataStore.instance().store_data(1, monitor)
+    MyDataStore.instance().store_data(15610, monitor)
     return tornado.web.Application([
         (r"/", MainHandler),
         (r"/autoclave/(\d{1})", AutoclaveHandler),

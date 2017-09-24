@@ -1,14 +1,9 @@
 {% extends base.html %}
 
-{% block headers %}
-<!-- Auto update the page for demo purposes -->
-<meta http-equiv="refresh" content="3"> 
-{% end %}
-
 {% block title %}Agitator Challenge - Sensors{% end %}
 
 {% block content %}
-<p class="flrt small text-muted">Last update: {{date}}</p>
+<p class="flrt text-muted">Last update: {{date}}</p>
 <h2>Statuses</h2>
 <div class="row">
     {% for id, ac in enumerate(autoclaves) %}

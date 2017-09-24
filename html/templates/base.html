@@ -1,7 +1,8 @@
 <!doctype html>
 <html>
     <head>
-        {% block headers %}{% end %}
+        <!-- Auto update the page for demo purposes -->
+        <meta http-equiv="refresh" content="3"> 
         
         <title>{% block title %}Agitator Challenge{% end %}</title>
 
@@ -10,7 +11,7 @@
     </head>
     <body>
         <div class="container">
-            <h1>Deep Mine</h1>
+            <h1><a href="/" class="nodecoration">Deep Mine</a></h1>
             <hr>
             {% block content %}Main Content{% end %}
         </div>

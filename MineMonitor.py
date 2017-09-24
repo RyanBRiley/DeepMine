@@ -127,6 +127,9 @@ class MineMonitor():
 		print update[1]['A']
 		return update
 
+	def getMaxSize(self):
+		return self.data[0].count('rows')[0]
+
 if __name__ == '__main__':
     monitor = MineMonitor('data')
     monitor.learn_stats()
