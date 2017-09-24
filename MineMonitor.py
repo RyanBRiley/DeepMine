@@ -121,7 +121,7 @@ class MineMonitor():
 			else:
 				autoclave_status = StatusEnum.Status.Good
 			update[autoclave_num + 1]['status'] = autoclave_status
-		print update[1]['Other']
+		print update[1]['A']
 		return update
 
 if __name__ == '__main__':
