@@ -33,17 +33,21 @@ class MainHandler(tornado.web.RequestHandler):
         monitor = d['monitor']
         mydata = monitor.get_update(row_index)
         MyDataStore.instance().store_data(row_index + 1, monitor)
-        self.render("templates/sensors.html", Status=StatusEnum.Status, date=mydata[0], autoclaves=mydata[1:])
+        self.render("templates/sensors.html", Status=StatusEnum.Status, date=mydata[0], autoclaves=mydata[1:], show_agitator=False)
 
 class AutoclaveHandler(tornado.web.RequestHandler):
     def get(self, id):
         idx = int(id)
-        self.render("templates/single.html", Status=StatusEnum.Status, id=idx, ac=data[idx + 1]) # first index is date of update
+        d = MyDataStore.instance().get_data()
+        row_index = d['row']
+        monitor = d['monitor']
+        mydata = monitor.get_update(row_index)
+        self.render("templates/single.html", Status=StatusEnum.Status, show_agitator=True, id=idx, ac=data[idx + 1]) # first index is date of update
 
 def make_app(): 
     monitor = MineMonitor('../data')
     monitor.learn_stats()
-    MyDataStore.instance().store_data(0, monitor)
+    MyDataStore.instance().store_data(1, monitor)
     return tornado.web.Application([
         (r"/", MainHandler),
         (r"/autoclave/(\d{1})", AutoclaveHandler),

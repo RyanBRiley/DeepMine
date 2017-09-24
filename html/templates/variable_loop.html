@@ -2,6 +2,10 @@
     {% if field == "status" %}
         {% continue %}
     {% end %}
+
+    {% if not show_agitator and "agitator" in field.lower() %}
+        {% continue %}
+    {% end %}
     <div>
         <p class="mt-2 p-2">{{ field.title() }}: 
             <span class="box text-white
