@@ -76,7 +76,7 @@ class MineMonitor():
 				
 				# Regular expression to match single capital letters
 				match = None
-				result = re.search('\s[A-F]\s', col)
+				result = re.search('\s[A-G]\s', col)
 				if result != None:
 					match = result.group(0)[1]
 				else:
@@ -121,7 +121,7 @@ class MineMonitor():
 			else:
 				autoclave_status = StatusEnum.Status.Good
 			update[autoclave_num + 1]['status'] = autoclave_status
-		
+		print update[1]['Other']
 		return update
 
 if __name__ == '__main__':
