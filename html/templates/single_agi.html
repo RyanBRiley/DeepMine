@@ -1,26 +1,24 @@
 {% extends base.html %}
 
-{% block title %}Agitator Challenge - Autoclave {{id}}{% end %}
+{% block title %}Agitator Challenge - Agitator {{id}}{% end %}
 
 {% block content %}
-    <h2>Autoclave {{id + 1}}
+    <h2>Agitator {{id}}
         <a href="/" class="btn btn-primary flrt">Go Back</a>
     </h2>
     <div class="clearfix"></div>
 
     <!-- Overall Status of Autoclave -->
     <div class="text-white text-center p-3
-        {% if ac["status"] == Status.Good %}
+        {% if agi["status"] == Status.Good %}
             bg-success
-        {% elif ac["status"] == Status.Caution %}
+        {% elif agi["status"] == Status.Caution %}
             bg-warning
-        {% elif ac["status"] == Status.Fail %}
+        {% elif agi["status"] == Status.Fail %}
             bg-danger
         {% else %}
             bg-info
         {% end %}
     ">System Status</div>
 
-    {% include variable_loop.html %}
-    
 {% end %}
