@@ -37,28 +37,34 @@ class MineMonitor():
 
 	def generate_structure(self, update_num):
 		update = []
+		fail_count = []
+		caution_count = []
 		# Set the date as the first element.
 		update_raw = self.data[0].iloc[update_num]
 		update.append(update_raw['Date'])
 
 		for i in xrange(4): # autoclave
 			update.append({})
+			fail_count.append({})
+			caution_count.append({})
 			update[i+1]["status"] = None
 			for j in xrange(7): # agitator
 				update[i + 1][chr(j+65)]={'status' : None}
+				fail_count[i][chr(j+65)] = 0
+				caution_count[i][chr(j+65)] = 0
 			update[i+1]["Other"] = {}
 
-		return update
+		return update, fail_count, caution_count
 
 
 	#Takes an input file and simulates a live feed with a stated interval, outputs state of each sensor
 	def get_update(self, update_num):
 		# Get the data structure
-		update = self.generate_structure(update_num)
+		update, fail_count, caution_count = self.generate_structure(update_num)
 		for autoclave_num in xrange(len(self.data)):
 			# initialize the counts
-			caution_count = 0
-			fail_count = 0
+			autoclave_caution_count = 0
+			autoclave_fail_count = 0
 
 			# get the data from the csv
 			update_raw = self.data[autoclave_num].iloc[update_num]
@@ -82,14 +88,35 @@ class MineMonitor():
 					status = StatusEnum.Status.Good
 				elif df >= self.sensor_std[autoclave_num][col] and df < 2 * self.sensor_std[autoclave_num][col]:
 					status = StatusEnum.Status.Caution
-					caution_count += 1
+					if caution_count[autoclave_num].has_key(match):
+						caution_count[autoclave_num][match] += 1
 				else:
 					status = StatusEnum.Status.Fail
-					fail_count += 1 
+					if fail_count[autoclave_num].has_key(match):
+						fail_count[autoclave_num][match] += 1
 				update[autoclave_num + 1][match][col] = [status, update_raw[col]]
-			if fail_count > 2:
+			'''
+			print 'caution_count:   '	
+			print caution_count
+			print '----------'
+			print 'fail_count:     '
+			print fail_count
+			print '----------'	
+			'''
+			for key in caution_count[autoclave_num].keys():
+				if caution_count[autoclave_num][key] > 2:
+					update[autoclave_num + 1][key] = StatusEnum.Status.Caution
+					autoclave_caution_count += 1
+
+			for key in fail_count[autoclave_num].keys():
+				if fail_count[autoclave_num][key] > 2:
+					update[autoclave_num + 1][key] = StatusEnum.Status.Fail
+					autoclave_fail_count += 1
+
+
+			if autoclave_fail_count > 0:
 				autoclave_status = StatusEnum.Status.Fail
-			elif caution_count > 5:
+			elif autoclave_caution_count > 2:
 				autoclave_status = StatusEnum.Status.Caution
 			else:
 				autoclave_status = StatusEnum.Status.Good
