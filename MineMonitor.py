@@ -103,7 +103,7 @@ class MineMonitor():
 			print fail_count
 			print '----------'	
 			'''
-			for key in caution_count[autoclav_num].keys():
+			for key in caution_count[autoclave_num].keys():
 				update[autoclave_num + 1][key]['status'] = StatusEnum.Status.Good
 
 			for key in caution_count[autoclave_num].keys():
