@@ -1,33 +1,40 @@
 {% extends base.html %}
 
+{% block headers %}
+<!-- Auto update the page for demo purposes -->
+<meta http-equiv="refresh" content="3"> 
+{% end %}
+
 {% block title %}Agitator Challenge - Sensors{% end %}
 
 {% block content %}
 <p class="flrt small text-muted">Last update: {{date}}</p>
 <h2>Statuses</h2>
 <div class="row">
-    {% for i, ac in enumerate(autoclaves) %}
-        <a href="/autoclave/{{i}}" class="col-md-3 p-3 nodecoration
-            {% if i < len(autoclaves)-1 %}vertical-divider{% end %}
-        ">
-        <div>
-            <!-- Title of Autoclave  -->
-            <h4 class="text-center">Autoclave {{ i+1 }}</h4>
+    {% for id, ac in enumerate(autoclaves) %}
+        <div class="col-md-3 p-3
+            {% if id < len(autoclaves)-1 %}vertical-divider{% end %}">
+            <a href="/autoclave/{{id}}" class="nodecoration">
+                <div>
+                <!-- Title of Autoclave  -->
+                <h4 class="text-center">Autoclave {{ id + 1 }}</h4>
 
-            <!-- Overall Status of Autoclave -->
-            <div class="text-white text-center p-3
-                {% if ac["status"] == Status.Good %}
-                    bg-success
-                {% elif ac["status"] == Status.Caution %}
-                    bg-warning
-                {% elif ac["status"] == Status.Fail %}
-                    bg-danger
-                {% else %}
-                    bg-info
-                {% end %}
-            ">System Status</div>
+                <!-- Overall Status of Autoclave -->
+                <div class="text-white text-center p-3
+                    {% if ac["status"] == Status.Good %}
+                        bg-success
+                    {% elif ac["status"] == Status.Caution %}
+                        bg-warning
+                    {% elif ac["status"] == Status.Fail %}
+                        bg-danger
+                    {% else %}
+                        bg-info
+                    {% end %}
+                ">System Status</div>
+                </div>
+            </a>
             {% include variable_loop.html %}
-        </div></a>
+        </div>
     {% end %}
 </div>
 {% end %}

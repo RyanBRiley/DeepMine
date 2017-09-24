@@ -21,20 +21,22 @@
         </div>
         {% end %}
     {% else %}
-        <div>
-            <p class="mt-2 p-2">Agitator {{ field.title() }}: 
-                <span class="box text-white
-                {% if value["status"] == Status.Good %}
-                    bg-success
-                {% elif value["status"] == Status.Caution %}
-                    bg-warning
-                {% elif value["status"] == Status.Fail %}
-                    bg-danger
-                {% else %}
-                    bg-info
-                {% end %}    
-                "></span>
-            </p>
-        </div>
+        <a href="/autoclave/{{id}}/agitator/{{field}}" class="nodecoration">
+            <div>
+                <p class="mt-2 p-2">Agitator {{ field.title() }}: 
+                    <span class="box text-white
+                    {% if value["status"] == Status.Good %}
+                        bg-success
+                    {% elif value["status"] == Status.Caution %}
+                        bg-warning
+                    {% elif value["status"] == Status.Fail %}
+                        bg-danger
+                    {% else %}
+                        bg-info
+                    {% end %}    
+                    "></span>
+                </p>
+            </div>
+        </a>
     {% end %}
 {% end %}
