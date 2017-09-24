@@ -44,6 +44,15 @@ class AutoclaveHandler(tornado.web.RequestHandler):
         mydata = monitor.get_update(row_index)
         self.render("templates/single.html", Status=StatusEnum.Status, show_other=True, id=idx, ac=mydata[idx + 1]) # first index is date of update
 
+class AgitatorHandler(tornado.web.RequestHandler):
+    def get(self, auto_id, agi_id):
+        auto_idx = int(auto_id)
+        d = MyDataStore.instance().get_data()
+        row_index = d['row']
+        monitor = d['monitor']
+        mydata = monitor.get_update(row_index)
+        self.render("templates/single_agi.html", Status=StatusEnum.Status, id=agi_id, agi=mydata[auto_idx + 1][agi_id]) # first index is date of update
+
 def make_app(): 
     monitor = MineMonitor('../data')
     monitor.learn_stats()
@@ -51,6 +60,7 @@ def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
         (r"/autoclave/(\d{1})", AutoclaveHandler),
+        (r"/autoclave/(\d{1})/agitator/([A-G])", AgitatorHandler),
         (r"/css/(.*)", tornado.web.StaticFileHandler, {
             "path": "css"
         }),
