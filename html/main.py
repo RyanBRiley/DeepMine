@@ -42,7 +42,7 @@ class AutoclaveHandler(tornado.web.RequestHandler):
         row_index = d['row']
         monitor = d['monitor']
         mydata = monitor.get_update(row_index)
-        self.render("templates/single.html", Status=StatusEnum.Status, show_agitator=True, id=idx, ac=data[idx + 1]) # first index is date of update
+        self.render("templates/single.html", Status=StatusEnum.Status, show_agitator=True, id=idx, ac=mydata[idx + 1]) # first index is date of update
 
 def make_app(): 
     monitor = MineMonitor('../data')
