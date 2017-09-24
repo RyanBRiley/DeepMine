@@ -65,8 +65,9 @@ class MineMonitor():
 					fail_count += 1 
 				update[autoclav_num + 1][col] = [status, update_raw[col]]
 			if fail_count > 2:
+				#print self.data[autoclav_num]['Date'][update_num]
 				autoclav_status = StatusEnum.Status.Fail
-			elif fail_count > 0 or caution_count > 2:
+			elif fail_count > 1 or caution_count > 3:
 				autoclav_status = StatusEnum.Status.Caution
 			else:
 				autoclav_status = StatusEnum.Status.Good
